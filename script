@@ -1,0 +1,57 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerMovement : MonoBehaviour
+{
+    private Rigidbody2D rb;
+
+    public Animator anim;
+    public float moveSpeed;
+
+    public float X, Y;
+    private bool isWalking;
+
+    private Vector3 moveDir;
+
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+    private void Update()
+    {
+        X = Input.GetAxisRaw("Horizontal");
+        Y = Input.GetAxisRaw("Vertical");
+
+        if (X != 0 || Y != 0)
+        {
+            anim.SetFloat("X", X);
+            anim.SetFloat("Y", Y);
+            if (!isWalking)
+            {
+                isWalking = true;
+                anim.SetBool("IsMoving", isWalking);
+            }
+        }else
+        {
+            if (isWalking)
+            {
+                isWalking = false;
+                anim.SetBool("IsMoving", isWalking);
+                StopMoving();
+            }
+        }
+
+        moveDir = new Vector3(X, Y).normalized;
+    }
+
+    private void fixedUpdate()
+    {
+        rb.velocity = moveDir * moveSpeed * Time.deltaTime;
+    }
+
+    private void StopMoving()
+    {
+        rb.velocity = Vector3.zero;
+    }
+}
